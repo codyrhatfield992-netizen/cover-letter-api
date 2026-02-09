@@ -6,7 +6,14 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: "2mb" }));
 
-const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const openAiApiKey = process.env.OPENAI_API_KEY;
+const openAiBaseUrl = process.env.OPENAI_BASE_URL;
+const openAiModel = process.env.OPENAI_MODEL || "gpt-4o-mini";
+
+const client = new OpenAI({
+  apiKey: openAiApiKey,
+  baseURL: openAiBaseUrl || undefined,
+});
 
 app.get("/", (req, res) => {
   res.json({ ok: true, message: "cover-letter-api is running" });
@@ -44,7 +51,7 @@ Output ONLY the finished cover letter. No headings. No bullets.
 `;
 
     const completion = await client.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: openAiModel,
       messages: [{ role: "user", content: prompt }],
       temperature: 0.7
     });
